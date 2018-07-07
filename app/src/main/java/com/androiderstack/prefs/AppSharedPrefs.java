@@ -90,6 +90,26 @@ public class AppSharedPrefs {
         return this.appSharedPrefs.getString("recentState", "");
     }
 
+    public void setWasSilent(boolean wasSilent)
+    {
+        this.prefsEditor.putBoolean("wasSilent", wasSilent);
+        this.prefsEditor.commit();
+    }
+    public boolean wasSilent()
+    {
+        return this.appSharedPrefs.getBoolean("wasSilent", false);
+    }
+
+    public void setWasVibrate(boolean wasVibrate)
+    {
+        this.prefsEditor.putBoolean("wasVibrate", wasVibrate);
+        this.prefsEditor.commit();
+    }
+    public boolean wasVibrate()
+    {
+        return this.appSharedPrefs.getBoolean("wasVibrate", false);
+    }
+
     public void setLastCall(String lastCall)
     {
         this.prefsEditor.putString("lastCall", lastCall);

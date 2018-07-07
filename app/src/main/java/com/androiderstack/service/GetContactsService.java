@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 import com.androiderstack.item.AllContacts;
 import com.androiderstack.smartcontacts.AppController;
@@ -74,7 +73,7 @@ public class GetContactsService extends IntentService {
                             allContactList.add(allContacts);
                             i++;
 
-                            Log.d(TAG, name+"=="+phoneNo);
+
                         }
                         pCur.close();
                     }
@@ -96,7 +95,7 @@ public class GetContactsService extends IntentService {
 
     private void sendAllContactsToActivity()
     {
-        Log.e(TAG, "sendAllContactsToActivity() called");
+
         Intent intent = new Intent(CONTACT_ACTION);
         sendBroadcast(intent);
     }

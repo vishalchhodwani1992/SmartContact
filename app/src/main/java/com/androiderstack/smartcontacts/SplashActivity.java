@@ -55,7 +55,7 @@ public class SplashActivity extends AppCompatActivity {
     Runnable splashRunnable = new Runnable() {
         @Override
         public void run() {
-            Intent intent = new Intent(SplashActivity.this, TabActivity.class);
+            Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         }

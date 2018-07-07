@@ -1,6 +1,5 @@
 package com.androiderstack.fragment;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
@@ -112,13 +110,11 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
         registerForContextMenu(contactListView);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void showDialogue()
     {
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create(); //Read Update
 
-        LayoutInflater infalInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogView = infalInflater.inflate(R.layout.alert_layout, null);
+        View dialogView = View.inflate(getActivity(), R.layout.alert_layout, null);
 
         contactField = (StyledEditText) dialogView.findViewById(R.id.alertLayout_phoneNumberEditText);
         ImageView pickFromContact = (ImageView) dialogView.findViewById(R.id.alertLayout_pickFromContacts);
@@ -213,7 +209,7 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
 
     private void saveToDB(String name, String number)
     {
-        if(number.length() < 15)
+        if( number.length() >= 10)
         {
             if(CheckForDuplicate.isBlockedNumberUnique(number))
             {

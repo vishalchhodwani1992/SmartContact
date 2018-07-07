@@ -36,9 +36,9 @@ import java.util.List;
 /**
  * Created by gst-10064 on 6/6/16.
  */
-public class TabActivity extends AppCompatActivity implements View.OnClickListener, DialogClickListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, DialogClickListener {
 
-    private final String TAG = "TabActivity";
+    private final String TAG = "HomeActivity";
 
     private List<TaskTabPagerDataItem> mTabs;
     ViewPager mViewPager;
@@ -74,7 +74,7 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
         {
             if(ConstantsLib.DEVICE_LIST.contains(Build.MANUFACTURER))
             {
-                Utils.showAlert(TabActivity.this, getResources().getString(R.string.app_name), "Add Smart Contacts application in Auto Start list to work smoothly", "Cancel", "Settings", ConstantsLib.SETTING_DIALOG_REQUEST, this);
+                Utils.showAlert(HomeActivity.this, getResources().getString(R.string.app_name), "Add Smart Contacts application in Auto Start list to work smoothly", "Cancel", "Settings", ConstantsLib.SETTING_DIALOG_REQUEST, this);
             }
         }
         catch (Exception ex)
@@ -87,7 +87,7 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
     {
         try
         {
-            myActionbar = new MyActionbar(TabActivity.this);
+            myActionbar = new MyActionbar(HomeActivity.this);
             myActionbar.setClickListener(this);
             myActionbar.setActionbar("Smart Contacts", false, true);
         }
@@ -152,18 +152,18 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
 
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1)
         {
-            if(ActivityCompat.checkSelfPermission(TabActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+            if(ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
             {
-                ActivityCompat.requestPermissions(TabActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, 1001);
+                ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, 1001);
             }
             else
             {
-                startService(new Intent(TabActivity.this, GetContactsService.class));
+                startService(new Intent(HomeActivity.this, GetContactsService.class));
             }
         }
         else
         {
-            startService(new Intent(TabActivity.this, GetContactsService.class));
+            startService(new Intent(HomeActivity.this, GetContactsService.class));
         }
 
     }
@@ -232,7 +232,7 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
         {
             final BaseFragment fragment = (BaseFragment) mTabs.get(mViewPager.getCurrentItem()).getTabFragment();
 
-            PopupMenu popupMenu = new PopupMenu(TabActivity.this, view);
+            PopupMenu popupMenu = new PopupMenu(HomeActivity.this, view);
             MenuInflater menuInflater = popupMenu.getMenuInflater();
             menuInflater.inflate(R.menu.imp_menu, popupMenu.getMenu());
 
@@ -262,13 +262,13 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
                                 fragment.clearList();
                             break;
                         case R.id.shareApp:
-                            Utils.shareApp(TabActivity.this);
+                            Utils.shareApp(HomeActivity.this);
                             break;
                         case R.id.rateUs:
-                            Utils.openRatingPage(TabActivity.this);
+                            Utils.openRatingPage(HomeActivity.this);
                             break;
                         case R.id.about_app:
-                            startActivity(new Intent(TabActivity.this, AboutActivity.class));
+                            startActivity(new Intent(HomeActivity.this, AboutActivity.class));
                             break;
                     }
 

@@ -1,6 +1,5 @@
 package com.androiderstack.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -107,12 +106,11 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
         registerForContextMenu(contactListView);
     }
 
-    @SuppressLint({ "NewApi", "InflateParams" })
     private void showDialogue()
     {
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create(); //Read Update
-        LayoutInflater infalInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogView = infalInflater.inflate(R.layout.alert_layout, null);
+
+        View dialogView = View.inflate(getActivity(), R.layout.alert_layout, null);
 
         contactField = (StyledEditText) dialogView.findViewById(R.id.alertLayout_phoneNumberEditText);
         ImageView pickFromContact = (ImageView) dialogView.findViewById(R.id.alertLayout_pickFromContacts);
@@ -209,7 +207,7 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
             contactField.setError("Should not empty");
             return false;
         }
-        if(number.length() < 7 && number.length() > 18)
+        if(number.length() < 10)
         {
             contactField.setError("Incorrect number");
             return false;
@@ -220,7 +218,7 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
 
     private void saveToDB(String name, String number)
     {
-        if(number.length() <= 15)
+        if(number.length() >= 10)
         {
             if(CheckForDuplicate.isIMPNumberUnique(number))
             {

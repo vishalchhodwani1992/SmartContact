@@ -31,19 +31,24 @@ public class CallBlockReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        LogUtils.e(TAG, "check 1");
-        audiomanager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        data = new ArrayList<>();
-        this.context = context;
+        if (intent != null
+                && intent.getAction() != null
+                && intent.getAction().equalsIgnoreCase("android.intent.action.PHONE_STATE"))
+        {
+            LogUtils.e(TAG, "check 1");
+            audiomanager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            data = new ArrayList<>();
+            this.context = context;
 
-        String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+            String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
 
-        String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-        number = Utils.removeInvalidSymbolsFromNumber2(context, number);
+            String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+            number = Utils.removeInvalidSymbolsFromNumber2(context, number);
 
-        disConnectNumber(number, stateStr);
+            disConnectNumber(number, stateStr);
 
-        LogUtils.e("check", "state :" +stateStr);
+            LogUtils.e("check", "state :" +stateStr);
+        }
     }
 
     private void disConnectNumber(String number, String stateStr)
@@ -53,8 +58,6 @@ public class CallBlockReceiver extends BroadcastReceiver {
             if(stateStr.equalsIgnoreCase("RINGING"))
             {
                 LogUtils.e(TAG, "check 2");
-
-                AppSharedPrefs.getInstance().setRecentState("RINGING");
 
                 getAllNoFromDatabaseToCheck();
 
@@ -68,6 +71,7 @@ public class CallBlockReceiver extends BroadcastReceiver {
                         LogUtils.e(TAG, "check 4");
                         // code to cut the call;
                         rejectCall(number);
+                        break;
                     }
                 }
             }

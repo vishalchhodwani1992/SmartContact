@@ -28,32 +28,34 @@ public class profileChangerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        this.context = context;
-
-        audiomanager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        contactList = new ArrayList<>();
-
-        String phoneState = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
-        String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-
-        LogUtils.e(TAG, "phoneState : " + phoneState);
-
-        if(AppSharedPrefs.getInstance().isAppEnable())
+        if (intent != null
+                && intent.getAction() != null
+                && intent.getAction().equalsIgnoreCase("android.intent.action.PHONE_STATE"))
         {
-            switch (phoneState)
+            this.context = context;
+
+            if(AppSharedPrefs.getInstance().isAppEnable())
             {
-                case RINGING:
-                    ringingStateCalled(number);
-                    break;
+                audiomanager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                contactList = new ArrayList<>();
 
-                case IDLE:
-                    idleStateCalled();
-                    break;
+                String phoneState = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+                String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+
+                LogUtils.e(TAG, "phoneState : " + phoneState);
+
+
+                switch (phoneState)
+                {
+                    case RINGING:
+                        ringingStateCalled(number);
+                        break;
+
+                    case IDLE:
+                        idleStateCalled();
+                        break;
+                }
             }
-        }
-        else
-        {
-            LogUtils.e(TAG, "App is disabled");
         }
     }
 
@@ -61,21 +63,21 @@ public class profileChangerReceiver extends BroadcastReceiver {
     {
         number = Utils.removeInvalidSymbolsFromNumber2(context, number);
 
-        AppSharedPrefs.getInstance().setRecentState(RINGING);
-
         getAllNoFromDatabaseToCheck();
-
-        AppSharedPrefs.getInstance().setLastCall(number);
 
         for (int i = 0; i < contactList.size(); i++)
         {
             if (number.equalsIgnoreCase(contactList.get(i).getNumber()) || (number.endsWith(contactList.get(i).getNumber()) || contactList.get(i).getNumber().endsWith(number)))
             {
-                boolean isRingingModeOn = audiomanager.getRingerMode() == AudioManager.RINGER_MODE_SILENT;
-                boolean isVibrateModeOn = audiomanager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
+                boolean isDeviceSilent = audiomanager.getRingerMode() == AudioManager.RINGER_MODE_SILENT;
+                boolean isDeviceVibrate = audiomanager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
 
-                if (isRingingModeOn || isVibrateModeOn)
+                if (isDeviceSilent || isDeviceVibrate)
                 {
+                    AppSharedPrefs.getInstance().setLastCall(number);
+                    AppSharedPrefs.getInstance().setWasSilent(isDeviceSilent);
+                    AppSharedPrefs.getInstance().setWasVibrate(isDeviceVibrate);
+                    AppSharedPrefs.getInstance().setRecentState(RINGING);
                     AppSharedPrefs.getInstance().setLastUserCall(number);
                     audiomanager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                     audiomanager.setStreamVolume(AudioManager.STREAM_RING, audiomanager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
@@ -108,8 +110,15 @@ public class profileChangerReceiver extends BroadcastReceiver {
                     if (lastUserCall.equalsIgnoreCase(contactList.get(i).getNumber()) || (lastUserCall.endsWith(contactList.get(i).getNumber()) || contactList.get(i).getNumber().endsWith(lastUserCall)))
                     {
                         LogUtils.e(TAG, "autoChange Success");
-                        audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                        if (AppSharedPrefs.getInstance().wasSilent())
+                            audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
+                        if (AppSharedPrefs.getInstance().wasVibrate())
+                            audiomanager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+
                         AppSharedPrefs.getInstance().setLastUserCall("");
+                        AppSharedPrefs.getInstance().setWasVibrate(false);
+                        AppSharedPrefs.getInstance().setWasSilent(false);
                     }
                 }
             }
