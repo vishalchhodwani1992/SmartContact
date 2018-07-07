@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/allContactItem_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/white"
+    card_view:cardCornerRadius="@dimen/_2sdp"
+    card_view:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toLeftOf="@+id/allContactItem_selected"
+            android:layout_alignParentLeft="true">
+
+            <com.androiderstack.custom_view.StyledTextView
+                android:id="@+id/allContactItem_nameTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:clickable="false"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Name"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/_14sdp" />
+
+            <com.androiderstack.custom_view.StyledTextView
+                android:id="@+id/allContactItem_numberTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_10sdp"
+                android:clickable="false"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:paddingRight="@dimen/_10sdp"
+                android:text="Number"
+                android:textColor="@color/half_black"
+                android:textSize="@dimen/_10sdp" />
+        </LinearLayout>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|right"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:checked="false"
+            android:layout_alignParentRight="true"
+            android:id="@+id/allContactItem_selected"/>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

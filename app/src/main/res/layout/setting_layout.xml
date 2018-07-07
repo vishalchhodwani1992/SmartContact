@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <com.androiderstack.custom_view.StyledTextView
+            android:id="@+id/setting_enable_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Enable"
+            android:textSize="@dimen/_16sdp"
+            android:textColor="@android:color/black"
+            android:layout_alignParentLeft="true"
+            android:padding="@dimen/_10sdp" />
+
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/setting_enable"
+            style="@style/SwitchButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:tag="setting_enable"
+            android:padding="@dimen/_10sdp"
+            app:kswBackColor="@android:color/darker_gray"
+            app:kswThumbColor="@color/white" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

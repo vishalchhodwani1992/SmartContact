@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/white"
+    card_view:cardCornerRadius="@dimen/_4sdp"
+    card_view:cardElevation="@dimen/_4sdp"
+    card_view:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.androiderstack.custom_view.StyledTextView
+            android:id="@+id/contactItem_nameTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/_10sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:clickable="false"
+            android:text="Name"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/_14sdp" />
+
+        <com.androiderstack.custom_view.StyledTextView
+            android:id="@+id/contactItem_numberTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="@dimen/_5sdp"
+            android:paddingLeft="@dimen/_10sdp"
+            android:clickable="false"
+            android:paddingRight="@dimen/_10sdp"
+            android:text="Number"
+            android:textColor="@color/half_black"
+            android:textSize="@dimen/_10sdp" />
+
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>
