@@ -62,6 +62,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnTouchLis
         setMyActionbar();
 
         initializeViews();
+
+        AppController.getInstance().getFirebaseAnalytics().setCurrentScreen(this, "SearchActivity", "SearchActivity");
+
     }
 
     public void initializeViews() {

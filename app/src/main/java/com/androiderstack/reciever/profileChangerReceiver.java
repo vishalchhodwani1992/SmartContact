@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
 import com.androiderstack.item.IMPContacts;
@@ -81,6 +82,8 @@ public class profileChangerReceiver extends BroadcastReceiver {
                     AppSharedPrefs.getInstance().setLastUserCall(number);
                     audiomanager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                     audiomanager.setStreamVolume(AudioManager.STREAM_RING, audiomanager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+
+                    sendDataToFirebase(contactList.get(i), "RINGER_MODE_NORMAL", RINGING);
                 }
             }
         }
@@ -111,14 +114,22 @@ public class profileChangerReceiver extends BroadcastReceiver {
                     {
                         LogUtils.e(TAG, "autoChange Success");
                         if (AppSharedPrefs.getInstance().wasSilent())
+                        {
                             audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                            sendDataToFirebase(contactList.get(i), "RINGER_MODE_SILENT", IDLE);
+                        }
 
                         if (AppSharedPrefs.getInstance().wasVibrate())
+                        {
                             audiomanager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                            sendDataToFirebase(contactList.get(i), "RINGER_MODE_VIBRATE", IDLE);
+                        }
 
                         AppSharedPrefs.getInstance().setLastUserCall("");
                         AppSharedPrefs.getInstance().setWasVibrate(false);
                         AppSharedPrefs.getInstance().setWasSilent(false);
+                        Utils.loadInertialAd(context);
+                        break;
                     }
                 }
             }
@@ -132,6 +143,22 @@ public class profileChangerReceiver extends BroadcastReceiver {
         {
             contactList.clear();
             contactList.addAll(AppController.getInstance().getDaoSession().getIMPContactsDao().loadAll());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendDataToFirebase(IMPContacts impContacts, String ringerMode, String state) {
+        try
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString("ContactName", impContacts.getName());
+            bundle.putString("ContactNumber", impContacts.getNumber());
+            bundle.putString("State", state);
+            bundle.putString("RingerMode", ringerMode);
+            Utils.sendEventToFirebase("PROFILE_CHANGED", bundle);
         }
         catch (Exception ex)
         {

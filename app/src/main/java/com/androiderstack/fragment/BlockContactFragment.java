@@ -73,6 +73,8 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
 
         loadInertialAd(false);
 
+        AppController.getInstance().getFirebaseAnalytics().setCurrentScreen(getActivity(), "Block Contacts", "BlockContactFragment");
+
         return rootView;
     }
 
@@ -221,9 +223,9 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
                     id++;
                 }
 
+                BlockContacts blockContacts = new BlockContacts();
                 if(name.equals(""))// if name is empty
                 {
-                    BlockContacts blockContacts = new BlockContacts();
                     blockContacts.setIsDeleteShown(false);
                     blockContacts.setId(id);
                     blockContacts.setName(number);
@@ -232,13 +234,13 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
                 }
                 else
                 {
-                    BlockContacts blockContacts = new BlockContacts();
                     blockContacts.setIsDeleteShown(false);
                     blockContacts.setId(id);
                     blockContacts.setName(name);
                     blockContacts.setNumber(number);
                     AppController.getInstance().getDaoSession().getBlockContactsDao().insert(blockContacts);
                 }
+                sendDataToFirebase(blockContacts);
                 loadInertialAd(true);
                 getFromDB();
             }
@@ -252,6 +254,20 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
             Toast.makeText(getActivity(), "Invalid Number..!", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private void sendDataToFirebase(BlockContacts impContacts) {
+        try
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString("ContactName", impContacts.getName());
+            bundle.putString("ContactNumber", impContacts.getNumber());
+            Utils.sendEventToFirebase("BLOCK_CONTACT_ADDED", bundle);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private void getFromDB()

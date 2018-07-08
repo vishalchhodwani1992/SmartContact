@@ -10,8 +10,10 @@ import java.util.ArrayList;
 public interface ConstantsLib {
 
     int SETTING_DIALOG_REQUEST = 100;
+    int CONTACT_READ_PERMISSION = 1001;
 
     String PLAY_URL = "http://play.google.com/store/apps/details?id=%s";
+    String CHECK_UPDATE_URL = "http://androiderstack.com/api/check_update_available.php";
     ArrayList<String> DEVICE_LIST = new ArrayList<String>() {{
         add("xiaomi");
         add("oppo");

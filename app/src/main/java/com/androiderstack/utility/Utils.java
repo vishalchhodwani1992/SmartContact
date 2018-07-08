@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -23,8 +24,13 @@ import android.view.inputmethod.InputMethodManager;
 import com.androiderstack.custom_view.StyledEditText;
 import com.androiderstack.listner.ConstantsLib;
 import com.androiderstack.listner.DialogClickListener;
+import com.androiderstack.prefs.AppSharedPrefs;
+import com.androiderstack.smartcontacts.AppController;
 import com.androiderstack.smartcontacts.BuildConfig;
 import com.androiderstack.smartcontacts.R;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
@@ -36,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by vishalchhodwani on 8/2/17.
@@ -385,6 +392,88 @@ public class Utils {
         {
             ex.printStackTrace();
         }
+    }
+
+
+    public static void getUserId()
+    {
+        try
+        {
+            String userId = AppSharedPrefs.getInstance().getUserId();
+
+            if (userId.equalsIgnoreCase(""))
+            {
+                AppSharedPrefs.getInstance().setUserId(Utils.getUniqueId());
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public static String getUniqueId()
+    {
+        try
+        {
+            return UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        try
+        {
+            return String.valueOf(System.currentTimeMillis());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return "";
+    }
+
+    public static void sendEventToFirebase(String eventName, Bundle bundle)
+    {
+        try
+        {
+            bundle.putString("UserId", AppSharedPrefs.getInstance().getUserId());
+            bundle.putString("EmailId", AppSharedPrefs.getInstance().getEmailId());
+            AppController.getInstance().getFirebaseAnalytics().logEvent(eventName.toUpperCase(), bundle);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void loadInertialAd(Context context)
+    {
+        try
+        {
+            final InterstitialAd interstitial = new InterstitialAd(context);
+            AdRequest adRequest = new AdRequest.Builder()
+
+                    // Add a test device to show Test Ads
+                    .build();
+
+            // Load ads into Interstitial Ads
+            interstitial.loadAd(adRequest);
+
+            // Prepare an Interstitial Ad Listener
+            interstitial.setAdListener(new AdListener() {
+                public void onAdLoaded() {
+                    // Call displayInterstitial() function
+                    interstitial.show();
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
     }
 
 }

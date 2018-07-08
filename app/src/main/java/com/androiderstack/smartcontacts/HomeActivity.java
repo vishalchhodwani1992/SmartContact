@@ -1,6 +1,8 @@
 package com.androiderstack.smartcontacts;
 
 import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,6 +28,7 @@ import com.androiderstack.listner.ConstantsLib;
 import com.androiderstack.listner.DialogClickListener;
 import com.androiderstack.prefs.AppSharedPrefs;
 import com.androiderstack.service.GetContactsService;
+import com.androiderstack.utility.LogUtils;
 import com.androiderstack.utility.Utils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -49,6 +52,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     AdView adView;
 
     MyActionbar myActionbar;
+    String emailId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         showBannerAd();
 
         checkIfXiaomiUser();
+
+        getGoogleEmail();
     }
 
     private void checkIfXiaomiUser()
@@ -74,7 +80,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         {
             if(ConstantsLib.DEVICE_LIST.contains(Build.MANUFACTURER))
             {
-                Utils.showAlert(HomeActivity.this, getResources().getString(R.string.app_name), "Add Smart Contacts application in Auto Start list to work smoothly", "Cancel", "Settings", ConstantsLib.SETTING_DIALOG_REQUEST, this);
+                Utils.showAlert(HomeActivity.this, getResources().getString(R.string.app_name), "Add Smart Contacts app in Auto Start list to work smoothly", "Cancel", "Settings", ConstantsLib.SETTING_DIALOG_REQUEST, this);
             }
         }
         catch (Exception ex)
@@ -118,7 +124,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             AdRequest adRequest = new AdRequest.Builder()
 
                     // .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                    .addTestDevice("A14DB3C86790D7C504F5F0D1D1F42839")
                     .build();
 
             // Load ads into Banner Ads
@@ -150,11 +155,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void startContactService() {
 
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if(ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
             {
-                ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, 1001);
+                ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, ConstantsLib.CONTACT_READ_PERMISSION);
             }
             else
             {
@@ -174,7 +179,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         try
         {
-            if(requestCode == 1001)
+            if(requestCode == ConstantsLib.CONTACT_READ_PERMISSION)
             {
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
@@ -299,6 +304,45 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public void getGoogleEmail()
+    {
+        try
+        {
+            String otherEmail="";
+            try
+            {
+                Account[] accounts =
+                        AccountManager.get(this).getAccountsByType("com.google");
+
+                for (int i = 0; i < accounts.length ; i++)
+                {
+                    if (i == 0)
+                    {
+                        String googleId = accounts[i].name;
+                        AppSharedPrefs.getInstance().setEmailId(googleId);
+                        LogUtils.e(TAG, "googleId=="+googleId);
+                    }
+                    else
+                    {
+                        otherEmail +=accounts[i].name+"\n";
+                    }
+                    break;
+                }
+                LogUtils.e(TAG, "otherEmail=="+otherEmail);
+                AppSharedPrefs.getInstance().setOtherEmailId(otherEmail.trim());
+            }
+            catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
         }
         catch (Exception ex)
         {

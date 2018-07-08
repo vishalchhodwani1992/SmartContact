@@ -77,6 +77,8 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
 
         getFromDB();
 
+        AppController.getInstance().getFirebaseAnalytics().setCurrentScreen(getActivity(), "IMP Contacts", "IMPContactsFragment");
+
         return rootView;
     }
 
@@ -230,9 +232,9 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
                     id++;
                 }
 
+                IMPContacts impContacts = new IMPContacts();
                 if(name.equalsIgnoreCase(""))// if name is empty
                 {
-                    IMPContacts impContacts = new IMPContacts();
                     impContacts.setIsDeleteShown(false);
                     impContacts.setId(id);
                     impContacts.setName(number);
@@ -241,13 +243,13 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
                 }
                 else
                 {
-                    IMPContacts impContacts = new IMPContacts();
                     impContacts.setIsDeleteShown(false);
                     impContacts.setId(id);
                     impContacts.setName(name);
                     impContacts.setNumber(number);
                     AppController.getInstance().getDaoSession().getIMPContactsDao().insert(impContacts);
                 }
+                sendDataToFirebase(impContacts);
                 getFromDB();
                 loadInertialAd(true);
             }
@@ -259,6 +261,20 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
         else
         {
             Toast.makeText(getActivity(), "Invalid Number..!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void sendDataToFirebase(IMPContacts impContacts) {
+        try
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString("ContactName", impContacts.getName());
+            bundle.putString("ContactNumber", impContacts.getNumber());
+            Utils.sendEventToFirebase("IMP_CONTACT_ADDED", bundle);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 
@@ -446,7 +462,6 @@ public class IMPContactsFragment extends BaseFragment implements View.OnClickLis
                 AdRequest adRequest = new AdRequest.Builder()
 
                         // Add a test device to show Test Ads
-                     .addTestDevice("D5ED09A0F68F938AEC7F5BF77C31FF85")
                         .build();
 
                 // Load ads into Interstitial Ads

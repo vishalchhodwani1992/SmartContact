@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
 import com.android.internal.telephony.ITelephony;
@@ -55,24 +56,24 @@ public class CallBlockReceiver extends BroadcastReceiver {
     {
         try
         {
-            if(stateStr.equalsIgnoreCase("RINGING"))
+
+            LogUtils.e(TAG, "check 2");
+
+            getAllNoFromDatabaseToCheck();
+
+            AppSharedPrefs.getInstance().setLastCall(number);
+
+            for(int i = 0 ; i<data.size() ; i++)
             {
-                LogUtils.e(TAG, "check 2");
-
-                getAllNoFromDatabaseToCheck();
-
-                AppSharedPrefs.getInstance().setLastCall(number);
-
-                for(int i = 0 ; i<data.size() ; i++)
+                LogUtils.e(TAG, "check 3");
+                if(number.equalsIgnoreCase(data.get(i).getNumber()) || (number.endsWith(data.get(i).getNumber()) ||  data.get(i).getNumber().endsWith(number)))
                 {
-                    LogUtils.e(TAG, "check 3");
-                    if(number.equalsIgnoreCase(data.get(i).getNumber()) || (number.endsWith(data.get(i).getNumber()) ||  data.get(i).getNumber().endsWith(number)))
-                    {
-                        LogUtils.e(TAG, "check 4");
-                        // code to cut the call;
-                        rejectCall(number);
-                        break;
-                    }
+                    LogUtils.e(TAG, "check 4");
+                    // code to cut the call;
+                    rejectCall(number);
+                    sendDataToFirebase(data.get(i));
+                    Utils.loadInertialAd(context);
+                    break;
                 }
             }
         }
@@ -113,6 +114,21 @@ public class CallBlockReceiver extends BroadcastReceiver {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void sendDataToFirebase(BlockContacts impContacts) {
+        try
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString("ContactName", impContacts.getName());
+            bundle.putString("ContactNumber", impContacts.getNumber());
+            bundle.putString("State", "RINGING");
+            Utils.sendEventToFirebase("CALL_REJECTED", bundle);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 }

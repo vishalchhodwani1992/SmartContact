@@ -77,7 +77,7 @@ public class StyledTextView extends TextView {
         try
         {
             ta = context.obtainStyledAttributes(attrs, R.styleable.TextElement, 0, 0);
-            String fontName = ta.getString(R.styleable.TextElement_font);
+            String fontName = ta.getString(R.styleable.TextElement_myfont);
             return fontName;
         }
         catch (Exception ex)

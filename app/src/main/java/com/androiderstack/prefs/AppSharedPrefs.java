@@ -120,6 +120,35 @@ public class AppSharedPrefs {
         return this.appSharedPrefs.getString("lastCall", "");
     }
 
+    public void setUserId(String userId)
+    {
+        this.prefsEditor.putString("userId", userId);
+        this.prefsEditor.commit();
+    }
+    public String getUserId()
+    {
+        return this.appSharedPrefs.getString("userId", "");
+    }
+
+    public void setEmailId(String emailId)
+    {
+        this.prefsEditor.putString("emailId", emailId);
+        this.prefsEditor.commit();
+    }
+    public String getEmailId()
+    {
+        return this.appSharedPrefs.getString("emailId", "");
+    }
+    public void setOtherEmailId(String otherEmailId)
+    {
+        this.prefsEditor.putString("otherEmailId", otherEmailId);
+        this.prefsEditor.commit();
+    }
+    public String getOtherEmailId()
+    {
+        return this.appSharedPrefs.getString("otherEmailId", "");
+    }
+
     public void setLastUserCall(String lastUserCall)
     {
         this.prefsEditor.putString("lastUserCall", lastUserCall);

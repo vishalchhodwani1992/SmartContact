@@ -51,7 +51,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-
     Runnable splashRunnable = new Runnable() {
         @Override
         public void run() {

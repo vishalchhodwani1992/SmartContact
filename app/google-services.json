@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "768740285620",
+    "firebase_url": "https://smart-contacts-42347.firebaseio.com",
+    "project_id": "smart-contacts-42347",
+    "storage_bucket": "smart-contacts-42347.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768740285620:android:80fc73c704517718",
+        "android_client_info": {
+          "package_name": "com.androiderstack.smartcontacts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768740285620-bksk2sj76fjr9er655mc8oim7prlqbej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_kk23o7uYYMiEqR24HP2wTeX9IHuJv-8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

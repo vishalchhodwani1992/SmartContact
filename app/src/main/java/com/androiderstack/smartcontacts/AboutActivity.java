@@ -31,6 +31,9 @@ public class AboutActivity extends AppCompatActivity {
         addActionBar();
 
         setData();
+
+        AppController.getInstance().getFirebaseAnalytics().setCurrentScreen(this, "AboutActivity", "AboutActivity");
+
     }
 
 
