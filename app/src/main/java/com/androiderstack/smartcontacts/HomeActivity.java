@@ -3,8 +3,11 @@ package com.androiderstack.smartcontacts;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,11 +31,14 @@ import com.androiderstack.item.TaskTabPagerDataItem;
 import com.androiderstack.listner.ConstantsLib;
 import com.androiderstack.listner.DialogClickListener;
 import com.androiderstack.prefs.AppSharedPrefs;
+import com.androiderstack.service.CheckUpdateService;
 import com.androiderstack.service.GetContactsService;
 import com.androiderstack.utility.LogUtils;
 import com.androiderstack.utility.Utils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +59,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     AdView adView;
 
     MyActionbar myActionbar;
-    String emailId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         checkIfXiaomiUser();
 
         getGoogleEmail();
+
+        registerUpdateCheckReceiver();
+
+        startCheckUpdateService();
+    }
+
+    private void startCheckUpdateService()
+    {
+        try
+        {
+            if (Utils.checkConnection(this))
+                startService(new Intent(this, CheckUpdateService.class));
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private void checkIfXiaomiUser()
@@ -343,6 +366,129 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 ex.printStackTrace();
             }
 
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    private void registerUpdateCheckReceiver()
+    {
+        try
+        {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(CheckUpdateService.ACTION_CHECK_UPDATE);
+            registerReceiver(updateCheckerTask, intentFilter);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    UpdateCheckerTask updateCheckerTask = new UpdateCheckerTask();
+    private class UpdateCheckerTask extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            try
+            {
+                if (intent != null && intent.getAction() != null)
+                {
+                    if (intent.getAction().equalsIgnoreCase(CheckUpdateService.ACTION_CHECK_UPDATE))
+                    {
+                        showDialogUpdateDialog(intent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void showDialogUpdateDialog(Intent intent) {
+        try
+        {
+            String response = intent.getStringExtra("data");
+            JSONObject jsonObject = new JSONObject(response);
+
+            String title = jsonObject.has("title") ? jsonObject.getString("title") : "Update Available";
+            int currentVersionCode = jsonObject.has("version_code_current") ? jsonObject.getInt("version_code_current") : BuildConfig.VERSION_CODE;
+            int minVersionCodeMin = jsonObject.has("version_code_min") ? jsonObject.getInt("version_code_min") : BuildConfig.VERSION_CODE;
+            String releaseNote = jsonObject.has("release_note") ? jsonObject.getString("release_note") : "Please update";
+
+            final boolean isForceUpdate = BuildConfig.VERSION_CODE < minVersionCodeMin;
+
+            if (BuildConfig.VERSION_CODE < currentVersionCode)
+            {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setTitle(title);
+                builder.setMessage(releaseNote);
+                builder.setCancelable(false);
+
+                String negativeButton = "";
+
+                if (isForceUpdate)
+                {
+                    negativeButton = "Quit";
+                }
+                else
+                {
+                    negativeButton = "Later";
+                }
+
+                final AlertDialog alertDialog = builder.create();
+
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Update Now", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Utils.openRatingPage(HomeActivity.this);
+
+                        if (isForceUpdate)
+                            finish();
+                        else
+                            alertDialog.dismiss();
+                    }
+                });
+
+
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, negativeButton, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if (isForceUpdate)
+                        {
+                            finish();
+                        }
+                        else
+                        {
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+
+                alertDialog.show();
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try
+        {
+            unregisterReceiver(updateCheckerTask);
         }
         catch (Exception ex)
         {

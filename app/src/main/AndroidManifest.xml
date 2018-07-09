@@ -97,6 +97,7 @@
         </receiver>
 
         <service android:name="com.androiderstack.service.GetContactsService" />
+        <service android:name="com.androiderstack.service.CheckUpdateService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
