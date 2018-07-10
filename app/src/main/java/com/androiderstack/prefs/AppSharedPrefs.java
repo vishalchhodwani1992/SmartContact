@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.androiderstack.smartcontacts.AppController;
+import com.androiderstack.smartcontacts.BuildConfig;
 
 
 public class AppSharedPrefs {
@@ -139,6 +139,7 @@ public class AppSharedPrefs {
     {
         return this.appSharedPrefs.getString("emailId", "");
     }
+
     public void setOtherEmailId(String otherEmailId)
     {
         this.prefsEditor.putString("otherEmailId", otherEmailId);
@@ -149,6 +150,47 @@ public class AppSharedPrefs {
         return this.appSharedPrefs.getString("otherEmailId", "");
     }
 
+    public void setUpdateTitle(String updateTitle)
+    {
+        this.prefsEditor.putString("updateTitle", updateTitle);
+        this.prefsEditor.commit();
+    }
+    public String getUpdateTitle()
+    {
+        return this.appSharedPrefs.getString("updateTitle", "Update Available");
+    }
+
+    public void setUpdateReleaseNot(String updateReleaseNot)
+    {
+        this.prefsEditor.putString("updateReleaseNot", updateReleaseNot);
+        this.prefsEditor.commit();
+    }
+    public String getUpdateReleaseNot()
+    {
+        return this.appSharedPrefs.getString("updateReleaseNot", "Update available, Please update");
+    }
+
+    public void setUpdateCurrentVersion(int updateCurrentVersion)
+    {
+        this.prefsEditor.putInt("updateCurrentVersion", updateCurrentVersion);
+        this.prefsEditor.commit();
+    }
+    public int getUpdateCurrentVersion()
+    {
+        return this.appSharedPrefs.getInt("updateCurrentVersion", BuildConfig.VERSION_CODE);
+    }
+
+    public void setUpdateMinVersion(int updateMinVersion)
+    {
+        this.prefsEditor.putInt("updateMinVersion", updateMinVersion);
+        this.prefsEditor.commit();
+    }
+    public int getUpdateMinVersion()
+    {
+        return this.appSharedPrefs.getInt("updateMinVersion", BuildConfig.VERSION_CODE);
+    }
+
+
     public void setLastUserCall(String lastUserCall)
     {
         this.prefsEditor.putString("lastUserCall", lastUserCall);
@@ -157,12 +199,6 @@ public class AppSharedPrefs {
     public String getLastUserCall()
     {
         return this.appSharedPrefs.getString("lastUserCall", "");
-    }
-
-    public static void showLog(String TAG, String message)
-    {
-        if(isShown)
-            Log.d(TAG, message);
     }
 
   public void clearPreference()

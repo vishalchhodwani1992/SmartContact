@@ -89,7 +89,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         try
         {
             if (Utils.checkConnection(this))
+            {
                 startService(new Intent(this, CheckUpdateService.class));
+            }
+            else
+            {
+                if (BuildConfig.VERSION_CODE < AppSharedPrefs.getInstance().getUpdateCurrentVersion())
+                    showDialogUpdateDialog();
+            }
         }
         catch (Exception ex)
         {
@@ -399,7 +406,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     if (intent.getAction().equalsIgnoreCase(CheckUpdateService.ACTION_CHECK_UPDATE))
                     {
-                        showDialogUpdateDialog(intent);
+
+                        String response = intent.getStringExtra("data");
+                        JSONObject jsonObject = new JSONObject(response);
+
+                        String title = jsonObject.has("title") ? jsonObject.getString("title") : "Update Available";
+                        String releaseNote = jsonObject.has("release_note") ? jsonObject.getString("release_note") : "Please update";
+                        int currentVersionCode = jsonObject.has("version_code_current") ? jsonObject.getInt("version_code_current") : BuildConfig.VERSION_CODE;
+                        int minVersionCodeMin = jsonObject.has("version_code_min") ? jsonObject.getInt("version_code_min") : BuildConfig.VERSION_CODE;
+
+                        AppSharedPrefs.getInstance().setUpdateTitle(title);
+                        AppSharedPrefs.getInstance().setUpdateReleaseNot(releaseNote);
+                        AppSharedPrefs.getInstance().setUpdateCurrentVersion(currentVersionCode);
+                        AppSharedPrefs.getInstance().setUpdateMinVersion(minVersionCodeMin);
+
+                        showDialogUpdateDialog();
                     }
                 }
             }
@@ -410,20 +431,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void showDialogUpdateDialog(Intent intent) {
+    private void showDialogUpdateDialog() {
         try
         {
-            String response = intent.getStringExtra("data");
-            JSONObject jsonObject = new JSONObject(response);
+            String title = AppSharedPrefs.getInstance().getUpdateTitle();
+            String releaseNote = AppSharedPrefs.getInstance().getUpdateReleaseNot();
+            int currentVersion = AppSharedPrefs.getInstance().getUpdateCurrentVersion();
+            int minVersion = AppSharedPrefs.getInstance().getUpdateMinVersion();
 
-            String title = jsonObject.has("title") ? jsonObject.getString("title") : "Update Available";
-            int currentVersionCode = jsonObject.has("version_code_current") ? jsonObject.getInt("version_code_current") : BuildConfig.VERSION_CODE;
-            int minVersionCodeMin = jsonObject.has("version_code_min") ? jsonObject.getInt("version_code_min") : BuildConfig.VERSION_CODE;
-            String releaseNote = jsonObject.has("release_note") ? jsonObject.getString("release_note") : "Please update";
+            final boolean isForceUpdate = BuildConfig.VERSION_CODE < minVersion;
 
-            final boolean isForceUpdate = BuildConfig.VERSION_CODE < minVersionCodeMin;
-
-            if (BuildConfig.VERSION_CODE < currentVersionCode)
+            if (BuildConfig.VERSION_CODE < currentVersion)
             {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -454,6 +472,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             finish();
                         else
                             alertDialog.dismiss();
+
+                        Utils.sendEventToFirebase("UPDATE_NOW_CLICKED", new Bundle());
                     }
                 });
 
@@ -470,6 +490,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         {
                             alertDialog.dismiss();
                         }
+
+                        Utils.sendEventToFirebase("UPDATE_LATER_CLICKED", new Bundle());
                     }
                 });
 
