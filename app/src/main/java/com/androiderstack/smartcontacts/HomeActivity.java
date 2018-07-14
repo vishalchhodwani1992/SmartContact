@@ -38,8 +38,6 @@ import com.androiderstack.utility.Utils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +47,7 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, DialogClickListener {
 
     private final String TAG = "HomeActivity";
+    public static boolean isRunning = false;
 
     private List<TaskTabPagerDataItem> mTabs;
     ViewPager mViewPager;
@@ -90,7 +89,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         {
             if (Utils.checkConnection(this))
             {
-                startService(new Intent(this, CheckUpdateService.class));
+                Intent intent1 = new Intent(this, CheckUpdateService.class);
+                intent1.putExtra(ConstantsLib.CALLED_FROM, HomeActivity.class.getName());
+                startService(intent1);
             }
             else
             {
@@ -135,6 +136,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initializeViews() {
 
+        isRunning = true;
         mTabs = new ArrayList<>();
         mSlidingTabLayout = (TabLayout) findViewById(R.id.userTaskTabLayout_tabLayout);
         mViewPager = (ViewPager) findViewById(R.id.userTaskTabLayout_viewPager);
@@ -406,20 +408,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     if (intent.getAction().equalsIgnoreCase(CheckUpdateService.ACTION_CHECK_UPDATE))
                     {
-
-                        String response = intent.getStringExtra("data");
-                        JSONObject jsonObject = new JSONObject(response);
-
-                        String title = jsonObject.has("title") ? jsonObject.getString("title") : "Update Available";
-                        String releaseNote = jsonObject.has("release_note") ? jsonObject.getString("release_note") : "Please update";
-                        int currentVersionCode = jsonObject.has("version_code_current") ? jsonObject.getInt("version_code_current") : BuildConfig.VERSION_CODE;
-                        int minVersionCodeMin = jsonObject.has("version_code_min") ? jsonObject.getInt("version_code_min") : BuildConfig.VERSION_CODE;
-
-                        AppSharedPrefs.getInstance().setUpdateTitle(title);
-                        AppSharedPrefs.getInstance().setUpdateReleaseNot(releaseNote);
-                        AppSharedPrefs.getInstance().setUpdateCurrentVersion(currentVersionCode);
-                        AppSharedPrefs.getInstance().setUpdateMinVersion(minVersionCodeMin);
-
                         showDialogUpdateDialog();
                     }
                 }
@@ -510,6 +498,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         try
         {
+            isRunning = false;
             unregisterReceiver(updateCheckerTask);
         }
         catch (Exception ex)

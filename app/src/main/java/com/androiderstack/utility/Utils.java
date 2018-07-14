@@ -2,6 +2,8 @@ package com.androiderstack.utility;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,8 +17,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -314,6 +316,31 @@ public class Utils {
         }
     }
 
+    public static Intent getPlayStoreIntent(Context context)
+    {
+        final String appPackageName = context.getPackageName();
+        Intent goToMarket;
+        try
+        {
+            Uri uri = Uri.parse("market://details?id=" + appPackageName);
+            goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+            // To count with Play market backstack, After pressing back button,
+            // to taken back to our application, we need to add following flags to intent.
+            goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                    Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+
+            return goToMarket;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName));
+    }
+
 
     public static boolean hasIceCreamSandwich() {
 
@@ -502,5 +529,35 @@ public class Utils {
         }
 
         return false;
+    }
+
+    public static void showUpdateNotification(Context context)
+    {
+        try
+        {
+            int currentVersion = AppSharedPrefs.getInstance().getUpdateCurrentVersion();
+
+            if (BuildConfig.VERSION_CODE < currentVersion)
+            {
+                NotificationCompat.Builder mBuilder =   new NotificationCompat.Builder(context, "1")
+                        .setSmallIcon(R.drawable.ic_launcher) // notification icon
+                        .setContentTitle(context.getString(R.string.app_name)) // title for notification
+                        .setContentText(AppSharedPrefs.getInstance().getUpdateNotificationReleaseNot()) // message for notification
+                        .setAutoCancel(true); // clear notification after click
+
+                Intent intent = getPlayStoreIntent(context);
+
+                PendingIntent pi = PendingIntent.getActivity(context,0,intent,PendingIntent.FLAG_ONE_SHOT);
+                mBuilder.setContentIntent(pi);
+                NotificationManager mNotificationManager =
+                        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                if (mNotificationManager != null)
+                    mNotificationManager.notify(0, mBuilder.build());
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }

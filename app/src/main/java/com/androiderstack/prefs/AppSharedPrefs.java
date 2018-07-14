@@ -170,6 +170,16 @@ public class AppSharedPrefs {
         return this.appSharedPrefs.getString("updateReleaseNot", "Update available, Please update");
     }
 
+    public void setUpdateNotificationReleaseNot(String updateNotificationReleaseNot)
+    {
+        this.prefsEditor.putString("updateNotificationReleaseNot", updateNotificationReleaseNot);
+        this.prefsEditor.commit();
+    }
+    public String getUpdateNotificationReleaseNot()
+    {
+        return this.appSharedPrefs.getString("updateNotificationReleaseNot", "Update available, Please update");
+    }
+
     public void setUpdateCurrentVersion(int updateCurrentVersion)
     {
         this.prefsEditor.putInt("updateCurrentVersion", updateCurrentVersion);

@@ -95,6 +95,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name="com.androiderstack.reciever.UpdateCheckerReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
 
         <service android:name="com.androiderstack.service.GetContactsService" />
         <service android:name="com.androiderstack.service.CheckUpdateService" />
