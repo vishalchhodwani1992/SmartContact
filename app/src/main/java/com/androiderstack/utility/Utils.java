@@ -543,6 +543,7 @@ public class Utils {
                         .setSmallIcon(R.drawable.ic_launcher) // notification icon
                         .setContentTitle(context.getString(R.string.app_name)) // title for notification
                         .setContentText(AppSharedPrefs.getInstance().getUpdateNotificationReleaseNot()) // message for notification
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // message for notification
                         .setAutoCancel(true); // clear notification after click
 
                 Intent intent = getPlayStoreIntent(context);

@@ -408,10 +408,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     if (intent.getAction().equalsIgnoreCase(CheckUpdateService.ACTION_CHECK_UPDATE))
                     {
-                        if (isRunning)
-                            showDialogUpdateDialog();
-                        else
-                            Utils.showUpdateNotification(context);
+                        showDialogUpdateDialog();
                     }
                 }
             }
