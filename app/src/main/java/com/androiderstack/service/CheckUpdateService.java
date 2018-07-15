@@ -96,7 +96,7 @@ public class CheckUpdateService extends IntentService {
     {
         try
         {
-            if (calledFrom.equalsIgnoreCase(HomeActivity.class.getName()))
+            if (calledFrom.equalsIgnoreCase(HomeActivity.class.getName()) && HomeActivity.isRunning)
             {
                 Intent intent = new Intent();
                 intent.setAction(ACTION_CHECK_UPDATE);

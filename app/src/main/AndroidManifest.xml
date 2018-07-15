@@ -78,7 +78,7 @@
         </activity>
 
         <receiver
-            android:name="com.androiderstack.reciever.profileChangerReceiver"
+            android:name="com.androiderstack.reciever.ProfileChangerReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

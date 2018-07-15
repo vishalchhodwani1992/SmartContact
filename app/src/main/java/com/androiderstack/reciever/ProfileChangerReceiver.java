@@ -16,7 +16,7 @@ import com.androiderstack.utility.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class profileChangerReceiver extends BroadcastReceiver {
+public class ProfileChangerReceiver extends BroadcastReceiver {
 
     public final String TAG = "profileChangerReciever";
     public final String RINGING = "RINGING";
@@ -81,9 +81,11 @@ public class profileChangerReceiver extends BroadcastReceiver {
                     AppSharedPrefs.getInstance().setRecentState(RINGING);
                     AppSharedPrefs.getInstance().setLastUserCall(number);
                     audiomanager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    audiomanager.setStreamVolume(AudioManager.STREAM_RING, audiomanager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+                    audiomanager.setStreamVolume(AudioManager.STREAM_RING, audiomanager.getStreamMaxVolume(AudioManager.STREAM_RING), AudioManager.FLAG_PLAY_SOUND);
 
+                    Utils.playSound(context);
                     sendDataToFirebase(contactList.get(i), "RINGER_MODE_NORMAL", RINGING);
+                    break;
                 }
             }
         }

@@ -10,7 +10,9 @@ import java.util.ArrayList;
 public interface ConstantsLib {
 
     int SETTING_DIALOG_REQUEST = 100;
+    int READ_PHONE_STATE = 1000;
     int CONTACT_READ_PERMISSION = 1001;
+    int ON_DO_NOT_DISTURB_CALLBACK_CODE = 1002;
     String CALLED_FROM = "CALLED_FROM";
 
     String PLAY_URL = "http://play.google.com/store/apps/details?id=%s";

@@ -50,6 +50,16 @@ public class AppSharedPrefs {
         return this.appSharedPrefs.getBoolean("isLogin", false);
     }
 
+    public void setAutoStartDialogDisplay(boolean autoStartDialogDisplay)
+    {
+        this.prefsEditor.putBoolean("autoStartDialogDisplay", autoStartDialogDisplay);
+        this.prefsEditor.commit();
+    }
+    public boolean isAutoStartDialogDisplay()
+    {
+        return this.appSharedPrefs.getBoolean("autoStartDialogDisplay", false);
+    }
+
     public void setAutoSilent(boolean autoSilent)
     {
         this.prefsEditor.putBoolean("autoSilent", autoSilent);

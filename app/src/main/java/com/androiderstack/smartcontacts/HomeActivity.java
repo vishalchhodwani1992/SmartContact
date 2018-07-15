@@ -41,6 +41,8 @@ import com.google.android.gms.ads.AdView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.androiderstack.listner.ConstantsLib.READ_PHONE_STATE;
+
 /**
  * Created by gst-10064 on 6/6/16.
  */
@@ -81,6 +83,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         registerUpdateCheckReceiver();
 
         startCheckUpdateService();
+
+//        requestRingerPermission();
     }
 
     private void startCheckUpdateService()
@@ -109,9 +113,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     {
         try
         {
-            if(ConstantsLib.DEVICE_LIST.contains(Build.MANUFACTURER))
+            if(ConstantsLib.DEVICE_LIST.contains(Build.MANUFACTURER.toLowerCase()))
             {
-                Utils.showAlert(HomeActivity.this, getResources().getString(R.string.app_name), "Add Smart Contacts app in Auto Start list to work smoothly", "Cancel", "Settings", ConstantsLib.SETTING_DIALOG_REQUEST, this);
+                if (!AppSharedPrefs.getInstance().isAutoStartDialogDisplay())
+                {
+                    Utils.showAlert(HomeActivity.this, getResources().getString(R.string.app_name),
+                            "Add Smart Contacts app in Auto Start list to work smoothly",
+                            "Settings", "Cancel", ConstantsLib.SETTING_DIALOG_REQUEST, this);
+                }
             }
         }
         catch (Exception ex)
@@ -196,6 +205,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             else
             {
                 startService(new Intent(HomeActivity.this, GetContactsService.class));
+                checkPhoneStatePermission();
             }
         }
         else
@@ -203,6 +213,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startService(new Intent(HomeActivity.this, GetContactsService.class));
         }
 
+    }
+
+    private void checkPhoneStatePermission()
+    {
+        try
+        {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                if(ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
+                {
+                    ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -216,6 +244,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     startContactService();
+                }
+            }
+            else if(requestCode == READ_PHONE_STATE)
+            {
+                if(grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                {
+                    Utils.showAlert(this, "Warning", "Smart Contacts will not work without granting telephony this permission"
+                            , "Ask again", "Cancel", READ_PHONE_STATE, this);
                 }
             }
         }
@@ -331,6 +367,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     case DialogInterface.BUTTON_POSITIVE:
                         Utils.openAutoStartSettingForAll(this);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+            else if (requestCode == ConstantsLib.READ_PHONE_STATE)
+            {
+                switch (which)
+                {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        checkPhoneStatePermission();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
@@ -506,4 +553,35 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             ex.printStackTrace();
         }
     }
+
+//    private void requestRingerPermission() {
+//        try {
+//            if( Build.VERSION.SDK_INT >= 23 ) {
+//                this.requestForDoNotDisturbPermissionOrSetDoNotDisturbForApi23AndUp();
+//            }
+//        } catch ( SecurityException e ) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @RequiresApi(api = Build.VERSION_CODES.M)
+//    private void requestForDoNotDisturbPermissionOrSetDoNotDisturbForApi23AndUp() {
+//
+//        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//        // if user granted access else ask for permission
+//        if (notificationManager != null && !notificationManager.isNotificationPolicyAccessGranted())
+//        {
+//            Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+//            startActivityForResult( intent, ON_DO_NOT_DISTURB_CALLBACK_CODE );
+//        }
+//    }
+//
+//    @RequiresApi(api = Build.VERSION_CODES.M)
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // Check which request we're responding to
+//        if (requestCode == ON_DO_NOT_DISTURB_CALLBACK_CODE ) {
+//            this.requestForDoNotDisturbPermissionOrSetDoNotDisturbForApi23AndUp();
+//        }
+//    }
 }

@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -400,8 +402,9 @@ public class Utils {
     {
         try
         {
+            AppSharedPrefs.getInstance().setAutoStartDialogDisplay(true);
             Intent intent = new Intent();
-            String manufacturer = android.os.Build.MANUFACTURER;
+            String manufacturer = android.os.Build.MANUFACTURER.toLowerCase();
             if ("xiaomi".equalsIgnoreCase(manufacturer)) {
                 intent.setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"));
             } else if ("oppo".equalsIgnoreCase(manufacturer)) {
@@ -480,6 +483,7 @@ public class Utils {
         try
         {
             final InterstitialAd interstitial = new InterstitialAd(context);
+            interstitial.setAdUnitId(context.getResources().getString(R.string.Interstitial_ad_id));
             AdRequest adRequest = new AdRequest.Builder()
 
                     // Add a test device to show Test Ads
@@ -540,10 +544,11 @@ public class Utils {
             if (BuildConfig.VERSION_CODE < currentVersion)
             {
                 NotificationCompat.Builder mBuilder =   new NotificationCompat.Builder(context, "1")
-                        .setSmallIcon(R.drawable.ic_launcher) // notification icon
+                        .setSmallIcon(R.drawable.notification_icon) // notification icon
                         .setContentTitle(context.getString(R.string.app_name)) // title for notification
                         .setContentText(AppSharedPrefs.getInstance().getUpdateNotificationReleaseNot()) // message for notification
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // message for notification
+                        .setTicker(context.getString(R.string.app_name))
                         .setAutoCancel(true); // clear notification after click
 
                 Intent intent = getPlayStoreIntent(context);
@@ -555,6 +560,19 @@ public class Utils {
                 if (mNotificationManager != null)
                     mNotificationManager.notify(0, mBuilder.build());
             }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void playSound(Context context) {
+        try
+        {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            Ringtone r = RingtoneManager.getRingtone(context, notification);
+            r.play();
         }
         catch (Exception ex)
         {
