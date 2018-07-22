@@ -1,15 +1,20 @@
 package com.androiderstack.fragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +34,8 @@ import com.androiderstack.custom_view.StyledEditText;
 import com.androiderstack.custom_view.StyledTextView;
 import com.androiderstack.item.AllContacts;
 import com.androiderstack.item.BlockContacts;
+import com.androiderstack.listner.ConstantsLib;
+import com.androiderstack.listner.DialogClickListener;
 import com.androiderstack.smartcontacts.AppController;
 import com.androiderstack.smartcontacts.R;
 import com.androiderstack.smartcontacts.SettingActivity;
@@ -41,10 +48,12 @@ import com.google.android.gms.ads.InterstitialAd;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.androiderstack.listner.ConstantsLib.READ_PHONE_STATE;
+
 /**
  * Created by gst-10064 on 6/6/16.
  */
-public class BlockContactFragment extends BaseFragment implements View.OnClickListener {
+public class BlockContactFragment extends BaseFragment implements View.OnClickListener, DialogClickListener {
     private static final int REQUEST_CONTACT_NUMBER = 101;
 
     BlockContactRecyclerViewAdapter contactListViewAdapter;
@@ -499,6 +508,81 @@ public class BlockContactFragment extends BaseFragment implements View.OnClickLi
             case R.id.addNewContact:
                 showDialogue();
                 break;
+        }
+    }
+
+
+    private void checkPhoneStatePermission()
+    {
+        try
+        {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                if(ActivityCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
+                {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        try
+        {
+            if(requestCode == READ_PHONE_STATE)
+            {
+                if(grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                {
+                    Utils.showAlert(getActivity(), "Warning", "Block Contacts will not work without granting telephony this permission"
+                            , "Ask again", "Cancel", READ_PHONE_STATE, this);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onDialogClick(int which, int requestCode) {
+
+        try
+        {
+            if (requestCode == ConstantsLib.READ_PHONE_STATE)
+            {
+                switch (which)
+                {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        checkPhoneStatePermission();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            checkPhoneStatePermission();
         }
     }
 }

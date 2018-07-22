@@ -553,35 +553,4 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             ex.printStackTrace();
         }
     }
-
-//    private void requestRingerPermission() {
-//        try {
-//            if( Build.VERSION.SDK_INT >= 23 ) {
-//                this.requestForDoNotDisturbPermissionOrSetDoNotDisturbForApi23AndUp();
-//            }
-//        } catch ( SecurityException e ) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @RequiresApi(api = Build.VERSION_CODES.M)
-//    private void requestForDoNotDisturbPermissionOrSetDoNotDisturbForApi23AndUp() {
-//
-//        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-//        // if user granted access else ask for permission
-//        if (notificationManager != null && !notificationManager.isNotificationPolicyAccessGranted())
-//        {
-//            Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-//            startActivityForResult( intent, ON_DO_NOT_DISTURB_CALLBACK_CODE );
-//        }
-//    }
-//
-//    @RequiresApi(api = Build.VERSION_CODES.M)
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        // Check which request we're responding to
-//        if (requestCode == ON_DO_NOT_DISTURB_CALLBACK_CODE ) {
-//            this.requestForDoNotDisturbPermissionOrSetDoNotDisturbForApi23AndUp();
-//        }
-//    }
 }
