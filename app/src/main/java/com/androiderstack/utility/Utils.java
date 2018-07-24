@@ -571,8 +571,22 @@ public class Utils {
         try
         {
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-            Ringtone r = RingtoneManager.getRingtone(context, notification);
-            r.play();
+            Ringtone ringtone = RingtoneManager.getRingtone(context, notification);
+            ringtone.play();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void stopSound(Context context) {
+        try
+        {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            Ringtone ringtone = RingtoneManager.getRingtone(context, notification);
+            LogUtils.e("Test", "ringtone.isPlaying()=="+ringtone.isPlaying());
+            ringtone.stop();
         }
         catch (Exception ex)
         {

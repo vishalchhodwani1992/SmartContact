@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
@@ -83,7 +84,8 @@ public class ProfileChangerReceiver extends BroadcastReceiver {
                     audiomanager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                     audiomanager.setStreamVolume(AudioManager.STREAM_RING, audiomanager.getStreamMaxVolume(AudioManager.STREAM_RING), AudioManager.FLAG_PLAY_SOUND);
 
-                    Utils.playSound(context);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        Utils.playSound(context);
                     sendDataToFirebase(contactList.get(i), "RINGER_MODE_NORMAL", RINGING);
                     break;
                 }
@@ -119,12 +121,18 @@ public class ProfileChangerReceiver extends BroadcastReceiver {
                         {
                             audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                             sendDataToFirebase(contactList.get(i), "RINGER_MODE_SILENT", IDLE);
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                                Utils.stopSound(context);
                         }
 
                         if (AppSharedPrefs.getInstance().wasVibrate())
                         {
                             audiomanager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                             sendDataToFirebase(contactList.get(i), "RINGER_MODE_VIBRATE", IDLE);
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                                Utils.stopSound(context);
                         }
 
                         AppSharedPrefs.getInstance().setLastUserCall("");
